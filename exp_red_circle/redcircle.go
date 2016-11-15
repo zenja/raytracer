@@ -7,7 +7,22 @@ import (
 	"os"
 )
 
+func hitSphere(center raytracer.Vec3, radius float64, r raytracer.Ray) bool {
+	oc := r.Origin().Minus(center)
+	a := r.Direction().Dot(r.Direction())
+	b := 2.0 * oc.Dot(r.Direction())
+	c := oc.Dot(oc) - radius*radius
+	if b*b-4*a*c > 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
 func color(r raytracer.Ray) raytracer.Vec3 {
+	if hitSphere(raytracer.Vec3{0.0, 0.0, -1.0}, 0.5, r) {
+		return raytracer.Vec3{1.0, 0.0, 0.0}
+	}
 	unitDirection := r.Direction().UnitVector()
 	t := (unitDirection.Y() + 1.0) * 0.5
 	white := raytracer.Vec3{1.0, 1.0, 1.0}
@@ -19,7 +34,7 @@ func color(r raytracer.Ray) raytracer.Vec3 {
 func main() {
 	nx := 200
 	ny := 100
-	f, err := os.Create("sky.ppm")
+	f, err := os.Create("red_circle.ppm")
 	if err != nil {
 		log.Fatal(err)
 	}
